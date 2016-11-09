@@ -1,0 +1,9 @@
+package tutorial;
+
+option java_package = "ru.ok.android.marshallingcomparsion.protobuff";
+option java_outer_classname = "NodeProtobuffProtos";
+
+message NodeProtobuff {
+    required int32 depth = 1;
+    repeated NodeProtobuff children = 2;
+}

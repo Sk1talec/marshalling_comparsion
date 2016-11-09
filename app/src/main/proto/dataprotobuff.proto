@@ -1,0 +1,20 @@
+import "nodeprotobuff.proto";
+
+package tutorial;
+
+option java_package = "ru.ok.android.marshallingcomparsion.protobuff";
+option java_outer_classname = "DataProtobuffProtos";
+
+message DataProtobuff {
+    required int32 i1 = 1;
+    required int32 i2 = 2;
+    required string s1 = 3;
+    required string s2 = 4;
+    required bool b1 = 5;
+    required bool b2 = 6;
+    required NodeProtobuff node = 7;
+}
+
+message DataBundle {
+    repeated DataProtobuff data = 1;
+}

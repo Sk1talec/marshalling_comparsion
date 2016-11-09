@@ -1,0 +1,9 @@
+namespace ru.ok.android.marshallingcomparsion.flatbuffer;
+
+table NodeFlat {
+    depth:int;
+    children:[NodeFlat];
+}
+
+root_type NodeFlat;
+
