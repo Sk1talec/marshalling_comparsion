@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
-public class ExampleUnitTest {
+public class FstProblemTest {
     private static final FSTConfiguration fstConf = FSTConfiguration.createAndroidDefaultConfiguration();
     public static final String MODEL = "Model";
     private CtClass ctClass;
@@ -95,6 +95,50 @@ public class ExampleUnitTest {
                 return clAfter.loadClass(osClass.getName());
             }
         }.readObject();
+        listField = clAfter.loadClass(MODEL).getField("list");
+        String listStr = (String) listField.get(model);
+        Assert.assertTrue(listStr == null);
+    }
+
+
+    @Test()
+    public void testSuccess() throws Exception {
+        ctClass.addInterface(cp.makeClass("java.io.Serializable"));
+        CtField field = CtField.make("public java.util.List list;", ctClass);
+        CtField field2 = CtField.make("private static long serialVersionUID = 1L;", ctClass);
+        ctClass.addField(field);
+        ctClass.addField(field2);
+        byte[] class1 = ctClass.toBytecode();
+
+        ClassLoader clBefore = new MyClassLoader(class1, getClass().getClassLoader());
+        Class<?> modelClazz = clBefore.loadClass(MODEL);
+        Object model = modelClazz.newInstance();
+
+        Field listField = modelClazz.getDeclaredField("list");
+        listField.set(model, new ArrayList<>());
+        List<String> list = (List<String>) listField.get(model);
+        list.add("FooBar");
+
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        fstConf.encodeToStream(baos, model);
+
+        Assert.assertTrue(baos.size() != 0);
+        /**
+         * Old model has been written to disk
+         */
+        ctClass.defrost();
+        ctClass.removeField(field);
+        ctClass.removeField(field2);
+        field = CtField.make("public java.lang.String list;", ctClass);
+        field2 = CtField.make("private static long serialVersionUID = 2L;", ctClass);
+        ctClass.addField(field);
+        ctClass.addField(field2);
+        byte[] class2 = ctClass.toBytecode();
+        ClassLoader clAfter = new MyClassLoader(class2, getClass().getClassLoader());
+
+        fstConf.setClassLoader(clAfter);
+        model = fstConf.decodeFromStream(new ByteArrayInputStream(baos.toByteArray()));
         listField = clAfter.loadClass(MODEL).getField("list");
         String listStr = (String) listField.get(model);
         Assert.assertTrue(listStr == null);
