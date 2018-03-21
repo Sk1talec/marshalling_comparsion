@@ -181,7 +181,8 @@ public class FstProblemTest {
         ClassLoader clAfter = new MyClassLoader(class2, getClass().getClassLoader());
 
         fstConf.setClassLoader(clAfter);
-        model = fstConf.decodeFromStream(new ByteArrayInputStream(baos.toByteArray()));
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        model = fstConf.decodeFromStream(bais);
         listField = clAfter.loadClass(MODEL).getField("list");
         String listStr = (String) listField.get(model);
         Assert.assertTrue(listStr == null);

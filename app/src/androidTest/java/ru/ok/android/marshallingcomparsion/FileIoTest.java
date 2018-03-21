@@ -37,18 +37,21 @@ public class FileIoTest extends ApplicationTestCase<Application> {
 
         for (Pair<String, Integer> data : testData) {
             byte[] buffer = genBuffer(data.second);
+
+            long start = System.currentTimeMillis();
             FileOutputStream fos = getContext().openFileOutput(data.first, Context.MODE_PRIVATE);
             try {
-                long start = System.currentTimeMillis();
                 fos.write(buffer);
+                fos.flush();
                 Log.d("DISK IO WRITE", data.second + ": " + (System.currentTimeMillis() - start) + " ms");
             } finally {
                 fos.close();
             }
-            FileInputStream fis = getContext().openFileInput(data.first);
+
+            start = System.currentTimeMillis();
             byte[] input = new byte[data.second];
+            FileInputStream fis = getContext().openFileInput(data.first);
             try {
-                long start = System.currentTimeMillis();
                 fis.read(input);
                 Log.d("DISK IO READ", data.second + ": " + (System.currentTimeMillis() - start) + " ms");
             } finally {
